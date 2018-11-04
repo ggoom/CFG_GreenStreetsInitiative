@@ -1,0 +1,161 @@
+#Table to populate with raw
+
+CREATE TABLE Public."rawdata"(
+	Row_labels VARCHAR(100),
+	Email VARCHAR(100),
+	Check_ins INT,
+	Home_Address VARCHAR(100),
+	Work_Address VARCHAR(100),
+	Biking INT,
+	Boat INT,
+	Bus INT,
+	Carpooling INT,
+	Commuter_Rail INT,
+	Driving_Alone INT,
+	Driving_Alone_Alt INT,
+	Electric_Bike_Scooter INT,
+	Kick_Scooter INT,
+	Other INT,
+	Ride_Share INT,
+	Running INT,
+	Shuttle INT,
+	Subway INT,
+	Telecommuting INT,
+	Transit_other INT,
+	Walking INT,
+	Grand_Total INT
+);
+
+SELECT * FROM Public."rawdata";
+
+ALTER TABLE PUBLIC."rawdata" ALTER COLUMN home_address TYPE varchar(200);
+
+#Importing Raw CSV
+
+COPY Public."rawdata" FROM 'C:\Users\garyn\Desktop\CFG_Greenstreets\initialData.csv' DELIMITER ',' CSV HEADER;
+
+
+#Prim, Second, and Tert Mode of Transport
+
+CREATE TABLE Public."transportMode"(
+	row_labels varchar(100),
+	prim varchar(100),
+	secondary varchar(100),
+	tertiary varchar(100)
+);
+
+#Distance traveled with each mode
+
+CREATE TABLE Public."distanceTraveled"(
+	row_labels varchar(100),
+	Check_ins INT,
+	Biking INT,
+	Boat INT,
+	Bus INT,
+	Carpooling INT,
+	Commuter_Rail INT,
+	Driving_Alone INT,
+	Driving_Alone_Alt INT,
+	Electric_Bike_Scooter INT,
+	Kick_Scooter INT,
+	Other INT,
+	Ride_Share INT,
+	Running INT,
+	Shuttle INT,
+	Subway INT,
+	Telecommuting INT,
+	Transit_other INT,
+	Walking INT,
+	Grand_Total INT
+);
+
+#Constant Speeds
+CREATE TABLE Public."constantSpeeds"(
+	Biking NUMERIC,
+	Boat NUMERIC,
+	Bus NUMERIC,
+	Carpooling NUMERIC,
+	Commuter_Rail NUMERIC,
+	Driving_Alone NUMERIC,
+	Driving_Alone_Alt NUMERIC,
+	Electric_Bike_Scooter NUMERIC,
+	Kick_Scooter NUMERIC,
+	Other NUMERIC,
+	Ride_Share NUMERIC,
+	Running NUMERIC,
+	Shuttle NUMERIC,
+	Subway NUMERIC,
+	Telecommuting NUMERIC,
+	Transit_other NUMERIC,
+	Walking NUMERIC
+);
+
+#Import Constant Speeds
+COPY Public."constantSpeeds" FROM 'C:\Users\garyn\Desktop\CFG_Greenstreets\constantSpeeds.csv' DELIMITER ',' CSV HEADER;
+
+
+#Trying to do mathhh
+WITH distance_calc AS(
+	SELECT (Biking*(Biking FROM Public."rawdata")) as Biking,
+		Boat,
+		Bus,
+		Carpooling,
+		Commuter_Rail,
+		Driving_Alone,
+		Driving_Alone_Alt,
+		Electric_Bike_Scooter,
+		Kick_Scooter,
+		Other,
+		Ride_Share,
+		Running,
+		Shuttle,
+		Subway,
+		Telecommuting,
+		Transit_other,
+		Walking,
+		Grand_Total
+)
+INSERT INTO Public."distanceTraveled" (
+	row_labels,
+	Check_ins,
+	Biking,
+	Boat,
+	Bus,
+	Carpooling,
+	Commuter_Rail,
+	Driving_Alone,
+	Driving_Alone_Alt,
+	Electric_Bike_Scooter,
+	Kick_Scooter,
+	Other,
+	Ride_Share,
+	Running,
+	Shuttle,
+	Subway,
+	Telecommuting,
+	Transit_other,
+	Walking,
+	Grand_Total
+)
+SELECT row_labels,
+	Check_ins,
+	Biking,
+	Boat,
+	Bus,
+	Carpooling,
+	Commuter_Rail,
+	Driving_Alone,
+	Driving_Alone_Alt,
+	Electric_Bike_Scooter,
+	Kick_Scooter,
+	Other,
+	Ride_Share,
+	Running,
+	Shuttle,
+	Subway,
+	Telecommuting,
+	Transit_other,
+	Walking,
+	Grand_Total
+FROM Public."rawdata"
+WHERE;
