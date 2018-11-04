@@ -1,0 +1,5 @@
+rawData - everything
+Personal Info - ID, name, email, home_addr, work_addr
+constantSpeeds - speeds of modes of transport
+zipcodes - ID, home_zip, work_zip, dist
+transportMode - ID, Primary, Secondary, Tertiary
