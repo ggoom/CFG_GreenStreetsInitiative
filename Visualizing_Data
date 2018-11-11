@@ -58,13 +58,20 @@ def People(filename):
     
     return people
 
+def Home_ZipCode(data,home):    #make condensed list of of all people objects from data with same home zipcodes
+    same_home=[]
+    for person in data:
+        if person.get_home()==home:
+            same_home.append(person)
+    return same_home
+"""
 #create a dict for each zipcode to organize the data - returns all the modes people from there are taking to work
 def Home_ZipCode (people):
-    """people -  list of person instances with all relevant data
+    people -  list of person instances with all relevant data
        returns - a dictionary 
            key(all home zipcodes) 
            values(modes of transport that people from there take to work)
-    """
+   
     
     home_zip = {}   #keys are zipcodes, values are lists of the people modes
     for person in people:
@@ -72,14 +79,21 @@ def Home_ZipCode (people):
             home_zip[person.get_home()] +=  [person.modes()]
         else:
             home_zip[person.get_home()] =  [person.modes()]
-    return home_zip
+    return home_zip"""
         
-def Work_ZipCode(people):
-    """people -  list of person instances with all relevant data
+def Work_ZipCode(data,work):    #make condensed list of of all people objects from data with same work zipcodes
+    same_work=[]
+    for person in data:
+        if person.get_work()==str(work):
+            same_work.append(person)
+    return same_work
+#old version below
+"""def Work_ZipCode(people):
+    people -  list of person instances with all relevant data
        returns - a dictionary 
            key(all work zipcodes) 
            values(modes of transport that people take to get there)
-    """
+    
     work_zip = {}   #keys are zipcodes, values are lists of the people modes
     for person in people:
         if person.get_work() in work_zip.keys():
@@ -87,10 +101,19 @@ def Work_ZipCode(people):
         else:
             work_zip[person.get_work()] = [person.modes()]
         
-    return work_zip
+    return work_zip"""
 
-def Home_and_work(people):
-    """takes people and orders them by people that make the same commute"""
+
+
+def Home_and_work(data, home, work):    #make condensed list of of all people objects from data going to these both places
+    same_home_work=[]
+    for person in data:
+        if person.get_home()==home and person.get_work()==work:
+            same_home_work.append(person)
+    return same_home_work
+#old version below 
+"""def Home_and_work(people):
+    #takes people and orders them by people that make the same commute
     home_and_work = {}
     for person in people:
         home_work = (person.get_home(), person.get_work())
@@ -99,22 +122,41 @@ def Home_and_work(people):
         else:
             home_and_work[home_work] = [person.modes()]
             
-    return home_and_work
+    return home_and_work"""
         
 
 def Primary_Dict(data):
-    """Takes in the data for a specific zipcde and returns a dictionary with:
+    """Takes in the data for a specific zipcode and returns a dictionary with:
         keys = mode of primary transportation
         values = number of people who take that mode"""
         
     primary_mode_dict = {}
     for person in data:
-        if person[0] not in primary_mode_dict.keys():
-            primary_mode_dict[person[0]] = 1
+        if person.get_primary() not in primary_mode_dict.keys():
+            primary_mode_dict[person.get_primary()] = 1
         else:
-            primary_mode_dict[person[0]] += 1
-            
+            primary_mode_dict[person.get_primary()] += 1
     return primary_mode_dict
+
+def Secondary_Dict(data):
+    """Takes in the data for a specific zipcode and returns a dictionary with:
+        keys = mode of secondary transportation
+        values = number of people who take that mode"""
+    secondary_mode_dict = {}
+    for person in data:
+        if person.get_secondary() not in secondary_mode_dict.keys():
+            secondary_mode_dict[person.get_secondary()] = 1
+        else:
+            secondary_mode_dict[person.get_secondary()] += 1
+    return secondary_mode_dict    
+def Tertiary_Dict(data):
+    tertiary_mode_dict = {}
+    for person in data:
+        if person.get_tertiary not in tertiary_mode_dict.keys():
+            tertiary_mode_dict[person.get_tertiary()] = 1
+        else:
+            tertiary_mode_dict[person.get_tertiary()] += 1
+    return tertiary_mode_dict        
 
 
 
@@ -145,19 +187,20 @@ go = False
 
 try:
     if which_dict == "home":
-        chart_zip_code = str(input("What Zip-Code? "))
-        data_for_zip = Home_ZipCode(data)[chart_zip_code]
+        chart_zip_code = input("What Zip-Code? ")
+        #print("type ",type(chart_zip_code))
+        data_for_zip = Home_ZipCode(data,chart_zip_code)
     elif which_dict == "work":
-        chart_zip_code = str(input("What Zip-Code? "))
-        data_for_zip = Work_ZipCode(data)[chart_zip_code]
+        chart_zip_code = input("What Zip-Code? ")
+        data_for_zip = Work_ZipCode(data, chart_zip_code)
     elif which_dict == "trip":
-        home = str(input("What home Zip-Code? "))
-        work = str(input("What work Zip-Code? "))
+        home = input("What home Zip-Code? ")
+        work = input("What work Zip-Code? ")
         chart_zip_code = (home, work)
-        data_for_zip = Home_and_work(data)[chart_zip_code]
+        data_for_zip = Home_and_work(data,chart_zip_code)
     else:
         raise Exception
-    
+
     primary_mode_dict = Primary_Dict(data_for_zip)  
     total = len(data_for_zip)
     
