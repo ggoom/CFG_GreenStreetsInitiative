@@ -213,7 +213,33 @@ except: #check that there is data/ correct type data exists and can be used
         print( "Error, no data for this zip code, try again! ")
         
         
+#make branches of same primary modes, same secondary modes, run secondary_dicts and primary_dict to print data
+def same_primary_dict(data_for_zip):   #make dict of all primary modes with Key: mode, Value:List of persons with this primary mode
+    primary_modes_dict={}
+    for person in data_for_zip:   #for each mode
+        if person.get_primary() not in primary_mode_dict.keys():
+            primary_modes_dict[person.get_primary()] = [person]
+        else:
+            primary_modes_dict[person.get_primary()].append(person)
+    return primary_modes_dict
+    
+def same_primary_and_secondary_dict(primary_mode_dict,mode): #does same as above for primary AND secondary modes the same using dict created abovee(as opposed to a bigger list like data_for_zip) and input for specific secondary branch to start from
+    secondary_modes_dict={}
+        for person in primary_mode[mode]:   #for each person in the mode's list
+            if person.get_secondary() not in secondary_modes_dict:
+                secondary_modes_dict[person.get_secondary()]=[person]
+            else:
+                secondary_modes_dict[person.get_secondary()].append(person)
+    
         
+
+
+    
+same_primaries=same_primary_dict(data_for_zip) ##make dict of all primary modes with Key: mode, Value of persons with this primary mode
+for i in primary_mode_dict.keys():
+    print ("For the primary mode", i, "here are the secondary modes:", Secondary_Dict(same_primaries[i]))   #iterates through each mode in same primaries and makes a dictionary with key:secondary mode of person in same_primaries, value: # of people with this secondary mode
+for i in secondary
+for
     
     
 #plot the data
