@@ -92,48 +92,112 @@ def Primary_List(data):
         keys = mode of primary transportation
         values = number of people who take that mode"""
         
-    primary_mode_dict = {}
-    for person in data:
-        if person.get_primary() not in primary_mode_dict.keys():
-            primary_mode_dict[person.get_primary()] = 1
-        else:
-            primary_mode_dict[person.get_primary()] += 1
-    
+    primary_mode_dict = Primary_Dict(data)
     return sorted(primary_mode_dict, key=primary_mode_dict.get, reverse=True)
 
 
-def Primary_source(data_for_zip): #will make source list [1,1,1,2,3...] for primaries->secondary (0 source is home zip)
-    primary_sources=[]
-    sortedPrimary=Primary_List(data_for_zip)
-    for i in range(1,len(sortedPrimary)+1):
-        primary_sources+=[i]*3
-    return primary_sources
 
-def Secondary_target
+def has_secondary(data):    #condenses data_for_zip to new list of Persons who all have secondary modes of transport
+    has_secondary_list=[]
+    for i in data:
+        if i.get_secondary()!="":
+            has_secondary_list.append(i)
+    return has_secondary_list
+
+def Secondary_Dict(data):
+    """Takes in the data for a specific zipcode and returns a dictionary with:
+        keys = mode of secondary transportation
+        values = number of people who take that mode"""
+    secondary_mode_dict = {}
+    for person in data:
+        if person.get_secondary() not in secondary_mode_dict.keys():
+            secondary_mode_dict[person.get_secondary()] = 1
+        else:
+            secondary_mode_dict[person.get_secondary()] += 1
+    return secondary_mode_dict  
+
+def Secondary_List(data):
+    """Takes in the data for a specific zipcode and returns a dictionary with:
         
+        data is a list of People
+        
+        keys = mode of primary transportation
+        values = number of people who take that mode"""
+        
+    secondary_mode_dict = Secondary_Dict(data)
+    return sorted(secondary_mode_dict, key=secondary_mode_dict.get, reverse=True)
+
+def secondary_paths(data_for_zip2, target1): #makes list of dictionaries where index in list is primary, key is secondary, value is #
+    matrix=['dummy space']  #clunky solution...not sure if even need it.
+    for source in target1:  #for every primary mode
+        for person in data_for_zip2:
+            if person.get_primary()==label1[source]:
+                target=person.get_secondary()
+                if source==len(matrix):     #if primary is new
+                    matrix.append({target:1})
+                elif target not in matrix[source]: #if secondary is new
+                    matrix[source][target]=1
+                else:                               #add person with same primary-secondary path
+                    matrix[source][target]+=1
+    return matrix
+
 
 #TESTING THE FUNCTIONS
 
 peopleList = People("Final_Dummy Data.csv")
 data_for_zip = Home_ZipCode(peopleList,"02110")
+
+#1st layer of sankey, home -> primaries
 sortedPrimary = Primary_List(data_for_zip)
-primary_modes_dict=Primary_Dict(data_for_zip) #not working
-print(sortedPrimary)
+primary_modes_dict=Primary_Dict(data_for_zip)
 
-label1=["02110"]    #this chunk of code creates label,color,source,target,value for home -> primary
+
+label1=["02110"]    
 label1.extend(sortedPrimary)
-color1=["blue"]
-color1+= ["red"]*len(sortedPrimary)
+color1=["blue"] #makes blue label for home
+color1+= ["red"]*len(sortedPrimary) #adds red labels for primaries
 source1=[0]*len(sortedPrimary) #the [0] thing makes as many source 0's as primaries for home->primary
-target1 = list(set(Primary_source(data_for_zip))) #condenses source list to just [1,2,3...]
+target1=[]
+for i in range(1,len(sortedPrimary)+1): #adds # of targets as there are primary modes
+    target1.append(i)
 value1= []
-for i in sortedPrimary:
+for i in sortedPrimary: #uses the primary dict to say how many use each mode as primary
     value1.append(primary_modes_dict[i])
-    
 
 
+#makes 2nd layer of sankey, primaries -> secondaries
+data_for_zip2=has_secondary(data_for_zip)
+sortedSecondary=Secondary_List(data_for_zip2)    
+path_matrix = secondary_paths(data_for_zip2, target1) #!!!this is the key to the second layer!!!
+
+label2=sortedSecondary
+color2=["orange"]*len(sortedSecondary)
+source2=[]
+for i in range(1,len(path_matrix)):
+    if i=="dummy space":
+        continue
+    source2.extend([i]*len(path_matrix[i]))
+target2=[]
+for i in path_matrix:
+    if i=="dummy space":
+        continue
+    for mode in list(i.keys()):
+        target2.append(label2.index(mode)+len(label1))
+value2=[]
+for i in path_matrix:
+    if i=="dummy space":
+        continue
+    value2.extend(list(i.values()))
+
+#extend labels from 1st layer to add labels for 2nd layer
+label1.extend(label2)
+color1.extend(color2)
+source1.extend(source2)
+target1.extend(target2)
+value1.extend(value2)
 
 #TEST
+
 
 import plotly.plotly as py
 
@@ -151,7 +215,7 @@ data = dict(
     ),
     link = dict(
       source=source1,
-      target = target1,
+      target =target1,
       value = value1
   ))
 
