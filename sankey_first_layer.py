@@ -85,14 +85,13 @@ def Primary_Dict(data_for_zip):
     return primary_mode_dict
 
 def Primary_List(data):
-    """Takes in the data for a specific zipcode and returns a dictionary with:
+    """Takes in the data for a specific zipcode and list of modes of transport from most to least frequent:
         
         data is a list of People
-        
-        keys = mode of primary transportation
-        values = number of people who take that mode"""
+        """
         
     primary_mode_dict = Primary_Dict(data)
+#    print(sorted(primary_mode_dict, key=primary_mode_dict.get, reverse=True))
     return sorted(primary_mode_dict, key=primary_mode_dict.get, reverse=True)
 
 
@@ -106,18 +105,28 @@ def has_secondary(data):    #condenses data_for_zip to new list of Persons who a
 
 def Secondary_Dict(data):
     """Takes in the data for a specific zipcode and returns a dictionary with:
-        keys = mode of secondary transportation
-        values = number of people who take that mode"""
+        keys = commutes from primary to secondary transportation
+        values = list with number of people who take that commute"""
     secondary_mode_dict = {}
     for person in data:
-        if person.get_secondary() not in secondary_mode_dict.keys():
-            secondary_mode_dict[person.get_secondary()] = 1
+#        print(person.get_secondary())
+        if type(person.get_secondary()) == str:
+            commute = person.get_primary() + " and " + person.get_secondary() #creates str that represents unique commute
+#            print(commute)
+            if commute not in secondary_mode_dict.keys():
+                secondary_mode_dict[commute] = 1
+            else:
+                secondary_mode_dict[commute] += 1
         else:
-            secondary_mode_dict[person.get_secondary()] += 1
+            if person.get_secondary() not in secondary_mode_dict.keys():
+                secondary_mode_dict[person.get_secondary()] = 1
+            else:
+                secondary_mode_dict[person.get_secondary()] += 1
+#    print(secondary_mode_dict)
     return secondary_mode_dict  
 
 def Secondary_List(data):
-    """Takes in the data for a specific zipcode and returns a dictionary with:
+    """Takes in the data for a specific zipcode and returns a list.
         
         data is a list of People
         
@@ -125,6 +134,7 @@ def Secondary_List(data):
         values = number of people who take that mode"""
         
     secondary_mode_dict = Secondary_Dict(data)
+#    print(sorted(secondary_mode_dict, key=secondary_mode_dict.get, reverse=True))
     return sorted(secondary_mode_dict, key=secondary_mode_dict.get, reverse=True)
 
 def secondary_paths(data_for_zip2, target1): #makes list of dictionaries where index in list is primary, key is secondary, value is #
@@ -132,7 +142,7 @@ def secondary_paths(data_for_zip2, target1): #makes list of dictionaries where i
     for source in target1:  #for every primary mode
         for person in data_for_zip2:
             if person.get_primary()==label1[source]:
-                target=person.get_secondary()
+                target = person.get_primary() + " and " + person.get_secondary() #same format as "commute" above
                 if source==len(matrix):     #if primary is new
                     matrix.append({target:1})
                 elif target not in matrix[source]: #if secondary is new
@@ -153,7 +163,8 @@ primary_modes_dict=Primary_Dict(data_for_zip)
 
 
 label1=["02110"]    
-label1.extend(sortedPrimary)
+#print(sortedPrimary)
+label1.extend(sortedPrimary) #why doesnt this work????????//
 color1=["blue"] #makes blue label for home
 color1+= ["red"]*len(sortedPrimary) #adds red labels for primaries
 source1=[0]*len(sortedPrimary) #the [0] thing makes as many source 0's as primaries for home->primary
@@ -161,17 +172,18 @@ target1=[]
 for i in range(1,len(sortedPrimary)+1): #adds # of targets as there are primary modes
     target1.append(i)
 value1= []
-for i in sortedPrimary: #uses the primary dict to say how many use each mode as primary
-    value1.append(primary_modes_dict[i])
+for mode in sortedPrimary: #uses the primary dict to say how many use each mode as primary
+    value1.append(primary_modes_dict[mode])
 
 
 #makes 2nd layer of sankey, primaries -> secondaries
 data_for_zip2=has_secondary(data_for_zip)
 sortedSecondary=Secondary_List(data_for_zip2)    
 path_matrix = secondary_paths(data_for_zip2, target1) #!!!this is the key to the second layer!!!
+#print(path_matrix)
 
-label2=sortedSecondary
-color2=["orange"]*len(sortedSecondary)
+label2 = sortedSecondary
+color2 = ["orange"]*len(sortedSecondary)
 source2=[]
 for i in range(1,len(path_matrix)):
     if i=="dummy space":
@@ -181,7 +193,7 @@ target2=[]
 for i in path_matrix:
     if i=="dummy space":
         continue
-    for mode in list(i.keys()):
+    for mode in list(i.keys()): #!!!
         target2.append(label2.index(mode)+len(label1))
 value2=[]
 for i in path_matrix:
@@ -220,11 +232,11 @@ data = dict(
   ))
 
 layout =  dict(
-    title = "Basic Sankey Diagram",
+    title = "Commutes for this Zip Code",
     font = dict(
       size = 10
     )
 )
 
 fig = dict(data=[data], layout=layout)
-py.plot(fig, validate=False)
+#py.plot(fig, validate=False)
