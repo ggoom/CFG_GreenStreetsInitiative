@@ -18,10 +18,10 @@ from geoplotlib.layers import DotDensityLayer as dd
 import numpy as np
 
 
-zipcodes = open('/Users/HannaTuomi/Desktop/CFG Green Streets/ziplatlon.csv')
-greenness = open('/Users/HannaTuomi/Desktop/CFG Green Streets/Greenness_by_Zip.csv')
+zipcodes = open('ziplatlon.csv')
+greenness = open('Greenness_by_Zip.csv')
 
-zipcode = read_csv('/Users/HannaTuomi/Desktop/CFG Green Streets/ziplatlon.csv')
+zipcode = read_csv('ziplatlon.csv')
 
 green_data = {}
 for line in greenness:
@@ -48,12 +48,12 @@ for line in zipcodes:
 
 for element in green_data.keys():
     if element in zips.keys():
-        print(element)
+        
         size = int(green_data[element][0])//10
        
         color = int(255*(1-(2*float(green_data[element][1]))))
-        
-#        print(size,color)
+        print(element, size, color)
+
 
 #        geoplotlib.add_layer(dd({'zip':zips[element][0], 'lat': [(zips[element][1])], 'lon': [(zips[element][2])]}, [color,255,color],size, None))
 #        
