@@ -55,7 +55,7 @@ for element in green_data.keys():
         print(element, size, color)
 
 
-#        geoplotlib.add_layer(dd({'zip':zips[element][0], 'lat': [(zips[element][1])], 'lon': [(zips[element][2])]}, [color,255,color],size, None))
+        geoplotlib.add_layer(dd({'zip':zips[element][0], 'lat': [(zips[element][1])], 'lon': [(zips[element][2])]}, [color,255,color],size, None))
 #        
 
         
@@ -63,4 +63,4 @@ for element in green_data.keys():
 #         scalemin=0, scalemax=None, f_group=None, show_colorbar=True)
 
 
-#geoplotlib.show()
+geoplotlib.show()
