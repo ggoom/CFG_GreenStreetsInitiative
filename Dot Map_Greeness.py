@@ -19,10 +19,10 @@ import numpy as np
 
 
 zipcodes = open('ziplatlon.csv')
-greenness = open('Greenness_by_Zip.csv')
+greenness = open('Greenness_by_Zip.csv')  
+    #insert the correct csv with format (zip, #people, %green change)
 
-zipcode = read_csv('ziplatlon.csv')
-
+#read the csv for green data to make it usable in geoplotlib
 green_data = {}
 for line in greenness:
     newline = line.strip().split(',')
@@ -32,7 +32,13 @@ for line in greenness:
     newline[0] = ZIP
     green_data[newline[0]] = (newline[1], newline[2])
 
+green_data_for_tooltip = {'percent': {}}
+for element in green_data.keys():
+    green_data_for_tooltip['percent'][element] = green_data[element][1]
     
+print(green_data_for_tooltip)
+    
+#read the csv for zipcodes to make it usable in geoplotlib
 zips = {}
 for line in zipcodes:
     newline = line.strip().split(',')
@@ -46,21 +52,31 @@ for line in zipcodes:
     newline[0] = ZIP
     zips[newline[0]] = [newline[0], float((newline[1])), float((newline[2]))]
 
+
+#create a new dot for each zipcode
 for element in green_data.keys():
     if element in zips.keys():
-        
+        #scale dot size by number of people
         size = int(green_data[element][0])//10
        
+        #scale color by percentage of people who make a green change
         color = int(255*(1-(2*float(green_data[element][1]))))
-        print(element, size, color)
-
-
-        geoplotlib.add_layer(dd({'zip':zips[element][0], 'lat': [(zips[element][1])], 'lon': [(zips[element][2])]}, [color,255,color],size, None))
-#        
-
         
-#geoplotlib.hist(zipcode, cmap='hot', alpha=94, colorscale='lin', binsize=10, show_tooltip=False,
-#         scalemin=0, scalemax=None, f_group=None, show_colorbar=True)
+        #create the data to make a dot for
+        data = {'zip':zips[element][0], 'lat': [(zips[element][1])], 'lon': [(zips[element][2])]}
+       
+        print(green_data_for_tooltip['percent'][element])
+        
+        #add the dot for the zipcode
+        geoplotlib.add_layer(dd(data, [color,255,color],size, \
+            f_tooltip=lambda r: r['percent']))
+#        dd.draw(proj, mouse_x, mouse_y, ui_manager)
+        
+        #add labels for zipcode
+        geoplotlib.labels(data, 'zip' , color='k', font_name= 'helvetica', \
+           font_size=8, anchor_x='left', anchor_y='top')
 
+        #create the pop-up box with green change %s
+        
 
 geoplotlib.show()
