@@ -153,16 +153,16 @@ def secondary_paths(data_for_zip2, target1): #makes list of dictionaries where i
 
 
 #TESTING THE FUNCTIONS
-
+homezip_input="02114"
 peopleList = People("Final_Dummy Data.csv")
-data_for_zip = Home_ZipCode(peopleList,"02110")
+data_for_zip = Home_ZipCode(peopleList,homezip_input)
 
 #1st layer of sankey, home -> primaries
 sortedPrimary = Primary_List(data_for_zip)
 primary_modes_dict=Primary_Dict(data_for_zip)
 
 
-label1=["02110"]    
+label1=[homezip_input]    
 #print(sortedPrimary)
 label1.extend(sortedPrimary) #why doesnt this work????????//
 color1=["blue"] #makes blue label for home
@@ -239,4 +239,6 @@ layout =  dict(
 )
 
 fig = dict(data=[data], layout=layout)
-#py.plot(fig, validate=False)
+plot_url=py.plot(fig, filename='sankey_override')
+
+print(plot_url)
